@@ -14,22 +14,18 @@ char * getXOR(char * s1, char *s2, int size) {
 }
 
 int main() {
+  int size, i, rfd;
+  char c, *s, *r, *se, *sd;
+  size_t nbytes = 1000;
+
+  s = (char *) malloc (nbytes + 1);
 
   printf("# > ");
-  char * s;
-  size_t nbytes = 1000;
-  s = (char *) malloc (nbytes + 1);
-  size_t bytes_read = getline(&s, &nbytes, stdin);
-  
-  //char s[] = "ciao lumachina puppa, ma anche bellissima";
-  int size = sizeof s;
-  char * r = malloc(size * sizeof(char));
-  char * se;
-  char * sd;
-  int i;
-  char c;
+  size = getline(&s, &nbytes, stdin);
 
-  int rfd = open("/dev/random", O_RDONLY);
+  r = malloc(size * sizeof(char));
+
+  rfd = open("/dev/random", O_RDONLY);
 
   for (i = 0; i < size - 1; i++) {
     read(rfd, &c, sizeof(char));

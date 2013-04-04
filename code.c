@@ -1,6 +1,18 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <pthread.h>
+
+size_t nbytes = 1000;
+
+void *teFunction (void * ptr) {
+  // pthread_create(&tr, NULL, &trFunction, NULL);
+}
+
+void *trFunction (void * ptr) {
+  printf("CUCU\n");
+  return NULL;
+}
 
 char * getXOR(char * s1, char *s2, int size) {
   char * tmp = malloc(size * sizeof(char));
@@ -14,15 +26,12 @@ char * getXOR(char * s1, char *s2, int size) {
 }
 
 int main() {
-  int size, i, rfd;
-  char c, *s, *r, *se, *sd;
-  size_t nbytes = 1000;
+  int i, rfd;
+  char c, *r, *se, *sd;
+  pthread_t tr, te, td, tw;
 
-  s = (char *) malloc (nbytes + 1);
-
-  printf("# > ");
-  size = getline(&s, &nbytes, stdin);
-
+  pthread_create(&tr, NULL, &trFunction, NULL);
+/*
   r = malloc(size * sizeof(char));
 
   rfd = open("/dev/random", O_RDONLY);
@@ -41,6 +50,6 @@ int main() {
   printf("R: %s\n", r);
   printf("SE: %s\n", se);
   printf("SD: %s\n", sd);
+*/
 
-  return 0;
 }

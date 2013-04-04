@@ -10,7 +10,14 @@ void *teFunction (void * ptr) {
 }
 
 void *trFunction (void * ptr) {
+  int size;
+  char * s;
+
+  s = (char *) malloc (nbytes + 1);
+
   printf("$> ");
+  size = getline(&s, &nbytes, stdin);
+
   return NULL;
 }
 
@@ -32,6 +39,7 @@ int main() {
 
   pthread_create(&tr, NULL, &trFunction, NULL);
   pthread_join(tr, NULL);
+  pthread_create(&te, NULL, &teFunction, NULL);
 /*
   r = malloc(size * sizeof(char));
 

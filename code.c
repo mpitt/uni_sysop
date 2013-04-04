@@ -10,7 +10,7 @@ void *teFunction (void * ptr) {
 }
 
 void *trFunction (void * ptr) {
-  printf("CUCU\n");
+  printf("$> ");
   return NULL;
 }
 
@@ -31,6 +31,7 @@ int main() {
   pthread_t tr, te, td, tw;
 
   pthread_create(&tr, NULL, &trFunction, NULL);
+  pthread_join(tr, NULL);
 /*
   r = malloc(size * sizeof(char));
 
@@ -51,5 +52,5 @@ int main() {
   printf("SE: %s\n", se);
   printf("SD: %s\n", sd);
 */
-
+  return 0;
 }

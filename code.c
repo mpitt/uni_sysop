@@ -2,8 +2,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <pthread.h>
+#include "code.h"
+#include "queue.h"
 
-size_t nbytes = 1000;
+
 int size;
 char *s, *r, *se, *sd;
 
@@ -47,16 +49,25 @@ void *teFunction (void * ptr) {
 }
 
 void *trFunction (void * ptr) {
-  s = (char *) malloc (nbytes + 1);
+  s = (char *) malloc (N_BYTES + 1);
 
   printf("$> ");
-  size = getline(&s, &nbytes, stdin);
+  size = getline(&s, &N_BYTES, stdin);
 
   return NULL;
 }
 
 int main() {
   pthread_t tr, te, td, tw;
+
+  queue q;
+  init_queue(q);
+  queue_item qi;
+  qi.s = "ciao";
+  qi.size = 5;
+  enqueue(q,qi);
+  print_queue(q);
+
 
   pthread_create(&tr, NULL, &trFunction, NULL);
   pthread_join(tr, NULL);

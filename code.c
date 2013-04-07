@@ -24,7 +24,7 @@ void *twFunction(void * ptr) {
 }
 
 void *tdFunction (void * ptr) {
-   sd = getXOR(r, se, size);
+  sd = getXOR(r, se, size);
 }
 
 void *teFunction (void * ptr) {
@@ -61,14 +61,19 @@ int main() {
   pthread_t tr, te, td, tw;
 
   queue q;
-  init_queue(q);
+  init_queue(&q);
   queue_item qi;
   qi.s = "ciao";
   qi.size = 5;
-  enqueue(q,qi);
-  print_queue(q);
+  enqueue(&q, &qi);
 
+  queue_item qi1;
+  qi1.s = "bello";
+  qi1.size = 5;
+  enqueue(&q, &qi1);
 
+  print_queue(&q);
+/*
   pthread_create(&tr, NULL, &trFunction, NULL);
   pthread_join(tr, NULL);
 
@@ -80,5 +85,6 @@ int main() {
 
   pthread_create(&tw, NULL, &twFunction, NULL);
   pthread_join(tw, NULL);
+*/
   return 0;
 }

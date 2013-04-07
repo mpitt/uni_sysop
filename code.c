@@ -5,17 +5,15 @@
 
 size_t nbytes = 1000;
 int size;
-int i, rfd;
-char c, *s, *r, *se, *sd;
+char *s, *r, *se, *sd;
 
 char * getXOR(char * s1, char *s2, int size) {
-  char * tmp = malloc(size * sizeof(char));
   int i;
+  char * tmp = malloc(size * sizeof(char));
 
-  for (i = 0; i < size; i++)
+  for (i = 0; i < size -1; i++)
     *(tmp+i) = s1[i] ^ s2[i];
 
-  *(tmp+i) = '\0';
   return tmp;
 }
 
@@ -28,6 +26,9 @@ void *tdFunction (void * ptr) {
 }
 
 void *teFunction (void * ptr) {
+  int i, rfd;
+  char c;
+
   r = malloc(size * sizeof(char));
 
   rfd = open("/dev/random", O_RDONLY);
@@ -36,10 +37,12 @@ void *teFunction (void * ptr) {
     read(rfd, &c, sizeof(char));
     *(r+i) = abs(c) % 26 + 65;
   }
-  *(r+i) = '\0';
+
   close(rfd);
-  printf("R: %s\n", r);
+
   se = getXOR(s, r, size);
+
+  printf("R: %s\n", r);
   printf("SE: %s\n", se);
 }
 

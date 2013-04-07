@@ -4,22 +4,9 @@
 #include <pthread.h>
 
 size_t nbytes = 1000;
-
-void *teFunction (void * ptr) {
-  // pthread_create(&tr, NULL, &trFunction, NULL);
-}
-
-void *trFunction (void * ptr) {
-  int size;
-  char * s;
-
-  s = (char *) malloc (nbytes + 1);
-
-  printf("$> ");
-  size = getline(&s, &nbytes, stdin);
-
-  return NULL;
-}
+int size;
+int i, rfd;
+char c, *s, *r, *se, *sd;
 
 char * getXOR(char * s1, char *s2, int size) {
   char * tmp = malloc(size * sizeof(char));
@@ -32,15 +19,15 @@ char * getXOR(char * s1, char *s2, int size) {
   return tmp;
 }
 
-int main() {
-  int i, rfd;
-  char c, *r, *se, *sd;
-  pthread_t tr, te, td, tw;
+void *twFunction(void * ptr) {
+  printf("SD: %s\n", sd);
+}
 
-  pthread_create(&tr, NULL, &trFunction, NULL);
-  pthread_join(tr, NULL);
-  pthread_create(&te, NULL, &teFunction, NULL);
-/*
+void *tdFunction (void * ptr) {
+   sd = getXOR(r, se, size);
+}
+
+void *teFunction (void * ptr) {
   r = malloc(size * sizeof(char));
 
   rfd = open("/dev/random", O_RDONLY);
@@ -51,14 +38,33 @@ int main() {
   }
   *(r+i) = '\0';
   close(rfd);
-
-  se = getXOR(s, r, size);
-  sd = getXOR(r, se, size);
-
-  printf("INPUT: %s\n", s);
   printf("R: %s\n", r);
+  se = getXOR(s, r, size);
   printf("SE: %s\n", se);
-  printf("SD: %s\n", sd);
-*/
+}
+
+void *trFunction (void * ptr) {
+  s = (char *) malloc (nbytes + 1);
+
+  printf("$> ");
+  size = getline(&s, &nbytes, stdin);
+
+  return NULL;
+}
+
+int main() {
+  pthread_t tr, te, td, tw;
+
+  pthread_create(&tr, NULL, &trFunction, NULL);
+  pthread_join(tr, NULL);
+
+  pthread_create(&te, NULL, &teFunction, NULL);
+  pthread_join(te, NULL);
+
+  pthread_create(&td, NULL, &tdFunction, NULL);
+  pthread_join(td, NULL);
+
+  pthread_create(&tw, NULL, &twFunction, NULL);
+  pthread_join(tw, NULL);
   return 0;
 }

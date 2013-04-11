@@ -2,12 +2,15 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <syslog.h>
 #include "code.h"
 #include "queue.h"
+#include "log.h"
 
 
 int size;
-char *s, *r, *se, *sd;
+char *r, *se, *sd;
+queue q;
 
 char * getXOR(char * s1, char *s2, int size) {
   int i;
@@ -30,6 +33,7 @@ void *tdFunction (void * ptr) {
 void *teFunction (void * ptr) {
   int i, rfd;
   char c;
+  char * s;
 
   r = malloc(size * sizeof(char));
 
@@ -49,10 +53,17 @@ void *teFunction (void * ptr) {
 }
 
 void *trFunction (void * ptr) {
-  s = (char *) malloc (N_BYTES + 1);
+  char * s = (char *) malloc (N_BYTES + 1);
 
   printf("$> ");
   size = getline(&s, &N_BYTES, stdin);
+
+  queue_item qi;
+  qi.s = s;
+  qi.size = size;
+  enqueue(&q, &qi);
+
+  Log(s, "tr.log");
 
   return NULL;
 }
@@ -60,23 +71,12 @@ void *trFunction (void * ptr) {
 int main() {
   pthread_t tr, te, td, tw;
 
-  queue q;
   init_queue(&q);
-  queue_item qi;
-  qi.s = "ciao";
-  qi.size = 5;
-  enqueue(&q, &qi);
 
-  queue_item qi1;
-  qi1.s = "bello";
-  qi1.size = 5;
-  enqueue(&q, &qi1);
-
-  print_queue(&q);
-/*
   pthread_create(&tr, NULL, &trFunction, NULL);
   pthread_join(tr, NULL);
 
+/*
   pthread_create(&te, NULL, &teFunction, NULL);
   pthread_join(te, NULL);
 

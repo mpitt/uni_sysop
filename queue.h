@@ -13,4 +13,7 @@ typedef struct {
 } queue;
 
 
-
+void enqueue(queue *q, queue_item *qi);
+void init_queue(queue *q);
+void print_queue(queue *q);
+queue_item dequeue(queue *q);

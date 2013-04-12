@@ -2,11 +2,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <pthread.h>
-#include <syslog.h>
 #include "code.h"
 #include "queue.h"
 #include "log.h"
-
+#include <unistd.h>
 
 int size;
 char *r, *se, *sd;
@@ -24,16 +23,18 @@ char * getXOR(char * s1, char *s2, int size) {
 
 void *twFunction(void * ptr) {
   printf("SD: %s\n", sd);
+  return NULL;
 }
 
 void *tdFunction (void * ptr) {
   sd = getXOR(r, se, size);
+  return NULL;
 }
 
 void *teFunction (void * ptr) {
   int i, rfd;
   char c;
-  char * s;
+  char * s = NULL;
 
   r = malloc(size * sizeof(char));
 
@@ -50,15 +51,17 @@ void *teFunction (void * ptr) {
 
   printf("R: %s\n", r);
   printf("SE: %s\n", se);
+
+  return NULL;
 }
 
 void *trFunction (void * ptr) {
+  queue_item qi;
   char * s = (char *) malloc (N_BYTES + 1);
 
   printf("$> ");
   size = getline(&s, &N_BYTES, stdin);
 
-  queue_item qi;
   qi.s = s;
   qi.size = size;
   enqueue(&q, &qi);

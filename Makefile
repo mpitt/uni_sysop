@@ -1,7 +1,9 @@
+CC_FLAGS	:= -lpthread -Wall --pedantic
+
 all: code queue log
 
 code: code.c queue.o log.o
-	gcc code.c queue.o log.o -o code -lpthread -Wall --pedantic
+	gcc code.c queue.o log.o -o code $(CC_FLAGS)
 
 queue: queue.c
 	gcc -c queue.c -Wall
@@ -19,3 +21,7 @@ clean_queue:
 
 clean_log:
 	rm log.o
+
+install:
+	mkdir -p /var/log/threads/
+	chmod 777 -R /var/log/threads/

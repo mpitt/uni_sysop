@@ -11,7 +11,7 @@
 
 int size;
 char *r, *se, *sd;
-sem_t tr2te;
+sem_t * tr2te;
 queue q;
 
 char * getXOR(char * s1, char *s2, int size) {
@@ -38,15 +38,21 @@ void *teFunction (void * ptr) {
   int i, rfd;
   char c;
   char * s = NULL;
+  queue_item qi;
 
-  printf("%d", &tr2te);
+  if(is_empty(&q)) {
+    sem_wait(tr2te);
+  }
 
-  sem_wait(&tr2te);
+  qi = dequeue(&q);
+  printf("%s\n", qi.s);
 
   r = malloc(size * sizeof(char));
 
+  printf("canarino\n");
   rfd = open("/dev/random", O_RDONLY);
 
+  printf("pesce rosso\n");
   for (i = 0; i < size - 1; i++) {
     read(rfd, &c, sizeof(char));
     *(r+i) = abs(c) % 26 + 65;
@@ -54,7 +60,7 @@ void *teFunction (void * ptr) {
 
   close(rfd);
 
-  se = getXOR(s, r, size);
+  se = getXOR(qi.s, r, size);
 
   printf("R: %s\n", r);
   printf("SE: %s\n", se);
@@ -70,14 +76,18 @@ void *trFunction (void * ptr) {
   do {
     printf("$> ");
     size = getline(&s, &N_BYTES, stdin);
+    printf("cucuLADRO\n");
     s[strlen(s)-1] = '\0';  // remove last char of this string
 
+    printf("cucuLADRO\n");
     qi.s = s;
     qi.size = size;
     enqueue(&q, &qi);
 
     Log(s, "tr.log");
-    sem_post(&tr2te);
+    printf("cucu\n");
+    sem_post(tr2te);
+    printf("cucu2\n");
   } while (strcmp(s, end) != 0);
 
   return NULL;
@@ -86,20 +96,24 @@ void *trFunction (void * ptr) {
 int main() {
   pthread_t tr, te, td, tw;
 
-  if (sem_init(&tr2te, 0,1)) {
-    printf("init");
-  }
+  tr2te = sem_open("/tr2teSem", O_CREAT, 0666, 0);
+
+//  if (sem_init(&tr2te, 0,1)) {
+//    printf("init");
+//  }
 
 //  sem_init(&tr2te, 0, 0);  // TODO[ml] catch errors
-/*
   init_queue(&q);
 
   pthread_create(&tr, NULL, &trFunction, NULL);
   pthread_create(&te, NULL, &teFunction, NULL);
 
+
   pthread_join(tr, NULL);
   pthread_join(te, NULL);
 
+  sem_close(tr2te);
+/*
   pthread_create(&td, NULL, &tdFunction, NULL);
   pthread_join(td, NULL);
 

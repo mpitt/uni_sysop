@@ -29,6 +29,10 @@ queue_item dequeue(queue *q)
   return x;
 }
 
+int is_empty(queue *q) {
+  return q->count == 0;
+}
+
 void print_queue(queue *q)
 {
   int i;

@@ -58,15 +58,19 @@ void *teFunction (void * ptr) {
 void *trFunction (void * ptr) {
   queue_item qi;
   char * s = (char *) malloc (N_BYTES + 1);
+  char * end = "quit";
 
-  printf("$> ");
-  size = getline(&s, &N_BYTES, stdin);
+  do {
+    printf("$> ");
+    size = getline(&s, &N_BYTES, stdin);
+    s[strlen(s)-1] = '\0';  // remove last char of this string
 
-  qi.s = s;
-  qi.size = size;
-  enqueue(&q, &qi);
+    qi.s = s;
+    qi.size = size;
+    enqueue(&q, &qi);
 
-  Log(s, "tr.log");
+    Log(s, "tr.log");
+  } while (strcmp(s, end) != 0);
 
   return NULL;
 }

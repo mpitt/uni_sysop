@@ -6,9 +6,12 @@
 #include "queue.h"
 #include "log.h"
 #include <unistd.h>
+#include <semaphore.h>
+#include <string.h>
 
 int size;
 char *r, *se, *sd;
+sem_t tr2te;
 queue q;
 
 char * getXOR(char * s1, char *s2, int size) {
@@ -35,6 +38,10 @@ void *teFunction (void * ptr) {
   int i, rfd;
   char c;
   char * s = NULL;
+
+  printf("%d", &tr2te);
+
+  sem_wait(&tr2te);
 
   r = malloc(size * sizeof(char));
 
@@ -70,6 +77,7 @@ void *trFunction (void * ptr) {
     enqueue(&q, &qi);
 
     Log(s, "tr.log");
+    sem_post(&tr2te);
   } while (strcmp(s, end) != 0);
 
   return NULL;
@@ -78,13 +86,18 @@ void *trFunction (void * ptr) {
 int main() {
   pthread_t tr, te, td, tw;
 
+  if (sem_init(&tr2te, 0,1)) {
+    printf("init");
+  }
+
+//  sem_init(&tr2te, 0, 0);  // TODO[ml] catch errors
+/*
   init_queue(&q);
 
   pthread_create(&tr, NULL, &trFunction, NULL);
-  pthread_join(tr, NULL);
-
-/*
   pthread_create(&te, NULL, &teFunction, NULL);
+
+  pthread_join(tr, NULL);
   pthread_join(te, NULL);
 
   pthread_create(&td, NULL, &tdFunction, NULL);

@@ -16,6 +16,7 @@ sem_t * te2td;
 sem_t * td2tw;
 sem_t * tw2te;
 queue q;
+queue_item currentQi;
 
 char * getXOR(char * s1, char *s2, int size) {
   int i;
@@ -31,6 +32,7 @@ void *twFunction(void * ptr) {
   while(1) {
     sem_wait(td2tw);
     printf("SD: %s\n", sd);
+    free(sd);
     sem_post(tw2te);
   }
   return NULL;
@@ -40,6 +42,7 @@ void *tdFunction (void * ptr) {
   while(1) {
     sem_wait(te2td);
     sd = getXOR(r, se, size);
+    free(se);
     sem_post(td2tw);
   }
   return NULL;
@@ -49,7 +52,6 @@ void *teFunction (void * ptr) {
   int i, rfd;
   char c;
   char * s = NULL;
-  queue_item qi;
 
   while(1) {
     sem_wait(tw2te);
@@ -57,20 +59,21 @@ void *teFunction (void * ptr) {
     if(is_empty(&q)) {
       sem_wait(tr2te);
     }
-    qi = dequeue(&q);
+    sleep(2);
+    currentQi = dequeue(&q);
 
     r = malloc(size * sizeof(char));
 
     rfd = open("/dev/random", O_RDONLY);
 
-    for (i = 0; i < size - 1; i++) {
+    for (i = 0; i < currentQi.size - 1; i++) {
       read(rfd, &c, sizeof(char));
       *(r+i) = abs(c) % 26 + 65;
     }
 
     close(rfd);
 
-    se = getXOR(qi.s, r, size);
+    se = getXOR(currentQi.s, r, currentQi.size);
 
     printf("R: %s\n", r);
     printf("SE: %s\n", se);
@@ -80,18 +83,20 @@ void *teFunction (void * ptr) {
 }
 
 void *trFunction (void * ptr) {
-  queue_item qi;
   char * s = (char *) malloc (N_BYTES + 1);
   char * end = "quit";
+  queue_item qi;
 
   do {
 //    printf("$> ");
+//    free(s);
+    s = (char *) malloc (N_BYTES + 1);
     size = getline(&s, &N_BYTES, stdin);
     s[strlen(s)-1] = '\0';  // remove last char of this string
     qi.s = s;
     qi.size = size;
     enqueue(&q, &qi);
-
+    print_queue(&q);
     Log(s, "tr.log");
     sem_post(tr2te);
   } while (strcmp(s, end) != 0);

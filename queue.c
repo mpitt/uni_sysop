@@ -10,9 +10,6 @@ void init_queue(queue *q)
 
 void enqueue(queue *q, queue_item *qi)
 {
-  printf("questo è quello passato: %s %p\n", qi->s, qi);
-  printf("q last è : %d\n", q->last);
-  printf("q count è : %d\n", q->count);
   q->last = (q->last+1) % QUEUESIZE;
   q->qi[ q->last ] = *qi;
   q->count = q->count + 1;

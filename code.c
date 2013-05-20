@@ -33,11 +33,11 @@ char * getXOR(char * s1, char *s2, int size) {
 void *twFunction(void * ptr) {
   while(1) {
     sem_wait(td2tw);
-    if (quit) {
+    printf("SD: %s\n", sd);
+    if (is_empty(&q) && quit) {
       sem_post(tw2te);
       return NULL;
     }
-    printf("SD: %s\n", sd);
     free(sd);
     sem_post(tw2te);
   }
@@ -47,13 +47,13 @@ void *twFunction(void * ptr) {
 void *tdFunction (void * ptr) {
   while(1) {
     sem_wait(te2td);
-    if (quit) {
-      sem_post(td2tw);
-      return NULL;
-    }
     sd = getXOR(r, se, globalQi.size);
     sd[globalQi.size-1] = '\0';
     printf("DIO sd: %s\n", sd);
+    if (is_empty(&q) && quit) {
+      sem_post(td2tw);
+      return NULL;
+    }
     free(se);
     sem_post(td2tw);
   }

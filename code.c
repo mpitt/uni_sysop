@@ -49,7 +49,6 @@ void *tdFunction (void * ptr) {
     sem_wait(te2td);
     sd = getXOR(r, se, globalQi.size);
     sd[globalQi.size-1] = '\0';
-    printf("DIO sd: %s\n", sd);
     if (is_empty(&q) && quit) {
       sem_post(td2tw);
       return NULL;

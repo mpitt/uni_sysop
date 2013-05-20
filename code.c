@@ -52,6 +52,8 @@ void *tdFunction (void * ptr) {
       return NULL;
     }
     sd = getXOR(r, se, globalQi.size);
+    sd[globalQi.size-1] = '\0';
+    printf("DIO sd: %s\n", sd);
     free(se);
     sem_post(td2tw);
   }
@@ -61,21 +63,22 @@ void *tdFunction (void * ptr) {
 void *teFunction (void * ptr) {
   int i, rfd;
   char c;
-
-  while(!quit) {
+  while(1) {
     sem_wait(tw2te);
 
-    if( (is_empty(&q)) && (!quit)) {
-      sem_wait(tr2te);
+    sem_wait(tr2te);
+    if(is_empty(&q)) {
       if (quit) {
         sem_post(te2td);
-        return NULL;
+        return 0;
       }
     }
+
     sleep(2);
     globalQi = dequeue(&q);
 
     r = malloc(globalQi.size * sizeof(char));
+    r[globalQi.size-1] = '\0';
 
     rfd = open("/dev/random", O_RDONLY);
 
@@ -87,6 +90,7 @@ void *teFunction (void * ptr) {
     close(rfd);
 
     se = getXOR(globalQi.s, r, globalQi.size);
+    se[globalQi.size-1] = '\0';
 
     printf("\n\nR: %s\n", r);
     printf("SE: %s\n", se);
@@ -97,7 +101,6 @@ void *teFunction (void * ptr) {
 
 void *trFunction (void * ptr) {
   int size;
-  queue_item qi;
   char * s = (char *) malloc (N_BYTES + 1);
   char * end = "quit";
 
@@ -106,6 +109,7 @@ void *trFunction (void * ptr) {
     //free(s);
     s = (char *) malloc (N_BYTES + 1);
 
+    queue_item qi;
     size = getline(&s, &N_BYTES, stdin);
     s[strlen(s)-1] = '\0';  // remove last char of this string
     if (strcmp(s, end) != 0) {
@@ -118,7 +122,7 @@ void *trFunction (void * ptr) {
     }
     sem_post(tr2te);
   }
-  return NULL;
+  return 0;
 }
 
 int main() {

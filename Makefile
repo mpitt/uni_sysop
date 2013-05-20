@@ -1,5 +1,7 @@
 CFLAGS	:= -lpthread -Wall --pedantic
 
+.PHONY: clean
+
 all: code queue log
 
 code: code.c queue.o log.o
@@ -11,16 +13,8 @@ queue: queue.c
 log: log.c
 	gcc -c log.c -Wall
 
-clean: clean_code clean_queue clean_log
-
-clean_code:
-	@rm -f code
-
-clean_queue:
-	@rm -f queue.o
-
-clean_log:
-	@rm -f log.o
+clean:
+	@rm -f *.o code
 
 install:
 	mkdir -p /var/log/threads/

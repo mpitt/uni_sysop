@@ -9,6 +9,7 @@
 #include <semaphore.h>
 #include <string.h>
 
+
 int size;
 char *r, *se, *sd;
 sem_t * tr2te;
@@ -16,6 +17,8 @@ sem_t * te2td;
 sem_t * td2tw;
 sem_t * tw2te;
 queue q;
+int quit = 0;
+
 
 char * getXOR(char * s1, char *s2, int size) {
   int i;
@@ -30,7 +33,12 @@ char * getXOR(char * s1, char *s2, int size) {
 void *twFunction(void * ptr) {
   while(1) {
     sem_wait(td2tw);
+    if (quit) {
+      sem_post(tw2te);
+      return NULL;
+    }
     printf("SD: %s\n", sd);
+    free(sd);
     sem_post(tw2te);
   }
   return NULL;
@@ -39,7 +47,12 @@ void *twFunction(void * ptr) {
 void *tdFunction (void * ptr) {
   while(1) {
     sem_wait(te2td);
+    if (quit) {
+      sem_post(td2tw);
+      return NULL;
+    }
     sd = getXOR(r, se, size);
+    free(se);
     sem_post(td2tw);
   }
   return NULL;
@@ -48,15 +61,19 @@ void *tdFunction (void * ptr) {
 void *teFunction (void * ptr) {
   int i, rfd;
   char c;
-  char * s = NULL;
   queue_item qi;
 
-  while(1) {
+  while(!quit) {
     sem_wait(tw2te);
 
-    if(is_empty(&q)) {
+    if( (is_empty(&q)) && (!quit)) {
       sem_wait(tr2te);
+      if (quit) {
+        sem_post(te2td);
+        return NULL;
+      }
     }
+    sleep(2);
     qi = dequeue(&q);
 
     r = malloc(size * sizeof(char));
@@ -84,18 +101,23 @@ void *trFunction (void * ptr) {
   char * s = (char *) malloc (N_BYTES + 1);
   char * end = "quit";
 
-  do {
-//    printf("$> ");
+  while(!quit) {
+//  printf("$> ");
+    free(s);
+    s = (char *) malloc (N_BYTES + 1);
+    
     size = getline(&s, &N_BYTES, stdin);
+    printf("%u", &s);
     s[strlen(s)-1] = '\0';  // remove last char of this string
-    qi.s = s;
-    qi.size = size;
-    enqueue(&q, &qi);
-
-    Log(s, "tr.log");
+    if (strcmp(s, end) != 0) { 
+      strcpy(qi.s, s);
+      qi.size = size;
+      enqueue(&q, &qi);
+    } else { 
+      quit = 1;
+    }    
     sem_post(tr2te);
-  } while (strcmp(s, end) != 0);
-
+  }
   return NULL;
 }
 

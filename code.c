@@ -9,7 +9,6 @@
 #include <semaphore.h>
 #include <string.h>
 
-
 char *r, *se, *sd;
 sem_t * tr2te;
 sem_t * te2td;
@@ -18,7 +17,6 @@ sem_t * tw2te;
 queue q;
 queue_item globalQi;
 int quit = 0;
-
 
 char * getXOR(char * s1, char *s2, int size) {
   int i;
@@ -62,6 +60,7 @@ void *tdFunction (void * ptr) {
 void *teFunction (void * ptr) {
   int i, rfd;
   char c;
+
   while(1) {
     sem_wait(tw2te);
 
@@ -80,6 +79,7 @@ void *teFunction (void * ptr) {
     r[globalQi.size-1] = '\0';
 
     rfd = open("/dev/random", O_RDONLY);
+
 
     for (i = 0; i < globalQi.size - 1; i++) {
       read(rfd, &c, sizeof(char));
@@ -102,6 +102,7 @@ void *trFunction (void * ptr) {
   int size;
   char * s = (char *) malloc (N_BYTES + 1);
   char * end = "quit";
+  queue_item qi;
 
   while(!quit) {
 //  printf("$> ");

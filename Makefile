@@ -13,14 +13,14 @@ log: log.c
 
 clean: clean_code clean_queue clean_log
 
-clean_code:
-	rm code
+clean_code: code
+	@rm code
 
-clean_queue:
-	rm queue.o
+clean_queue: queue.o
+	@rm queue.o
 
-clean_log:
-	rm log.o
+clean_log: log.o
+	@rm log.o
 
 install:
 	mkdir -p /var/log/threads/

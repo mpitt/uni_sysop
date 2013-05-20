@@ -105,15 +105,12 @@ void *trFunction (void * ptr) {
   queue_item qi;
 
   while(!quit) {
-//  printf("$> ");
-    //free(s);
     s = (char *) malloc (N_BYTES + 1);
-
     queue_item qi;
+
     size = getline(&s, &N_BYTES, stdin);
-    s[strlen(s)-1] = '\0';  // remove last char of this string
+    s[strlen(s)-1] = '\0';                /* remove last char of this string */
     if (strcmp(s, end) != 0) {
-      //strcpy(qi.s, s);
       qi.s = s;
       qi.size = size;
       enqueue(&q, &qi);
@@ -125,10 +122,21 @@ void *trFunction (void * ptr) {
   return 0;
 }
 
-int main() {
+int main(int argc, char** argv) {
+  int c;
   pthread_t tr, te, td, tw;
 
-  // remove useless semaphore
+  while ( (c = getopt(argc, argv, "h")) != -1 ) {
+    switch(c) {
+      case 'h':
+        printf("code: encodes and decodes strings\n");
+        printf("\tUsage: code\n");
+        printf("\tQuit with 'quit'\n");
+        return 0;
+    }
+  }
+
+  /* remove useless semaphore */
   sem_unlink("/tr2teSem");
   sem_unlink("/te2tdSem");
   sem_unlink("/td2twSem");

@@ -10,13 +10,13 @@
 #include <string.h>
 
 
-int size;
 char *r, *se, *sd;
 sem_t * tr2te;
 sem_t * te2td;
 sem_t * td2tw;
 sem_t * tw2te;
 queue q;
+queue_item globalQi;
 int quit = 0;
 
 
@@ -24,7 +24,7 @@ char * getXOR(char * s1, char *s2, int size) {
   int i;
   char * tmp = malloc(size * sizeof(char));
 
-  for (i = 0; i < size -1; i++)
+  for (i = 0; i < globalQi.size -1; i++)
     *(tmp+i) = s1[i] ^ s2[i];
 
   return tmp;
@@ -51,7 +51,7 @@ void *tdFunction (void * ptr) {
       sem_post(td2tw);
       return NULL;
     }
-    sd = getXOR(r, se, size);
+    sd = getXOR(r, se, globalQi.size);
     free(se);
     sem_post(td2tw);
   }
@@ -61,7 +61,6 @@ void *tdFunction (void * ptr) {
 void *teFunction (void * ptr) {
   int i, rfd;
   char c;
-  queue_item qi;
 
   while(!quit) {
     sem_wait(tw2te);
@@ -74,22 +73,22 @@ void *teFunction (void * ptr) {
       }
     }
     sleep(2);
-    qi = dequeue(&q);
+    globalQi = dequeue(&q);
 
-    r = malloc(size * sizeof(char));
+    r = malloc(globalQi.size * sizeof(char));
 
     rfd = open("/dev/random", O_RDONLY);
 
-    for (i = 0; i < size - 1; i++) {
+    for (i = 0; i < globalQi.size - 1; i++) {
       read(rfd, &c, sizeof(char));
       *(r+i) = abs(c) % 26 + 65;
     }
 
     close(rfd);
 
-    se = getXOR(qi.s, r, size);
+    se = getXOR(globalQi.s, r, globalQi.size);
 
-    printf("R: %s\n", r);
+    printf("\n\nR: %s\n", r);
     printf("SE: %s\n", se);
     sem_post(te2td);
   }
@@ -97,25 +96,26 @@ void *teFunction (void * ptr) {
 }
 
 void *trFunction (void * ptr) {
+  int size;
   queue_item qi;
   char * s = (char *) malloc (N_BYTES + 1);
   char * end = "quit";
 
   while(!quit) {
 //  printf("$> ");
-    free(s);
+    //free(s);
     s = (char *) malloc (N_BYTES + 1);
-    
+
     size = getline(&s, &N_BYTES, stdin);
-    printf("%u", &s);
     s[strlen(s)-1] = '\0';  // remove last char of this string
-    if (strcmp(s, end) != 0) { 
-      strcpy(qi.s, s);
+    if (strcmp(s, end) != 0) {
+      //strcpy(qi.s, s);
+      qi.s = s;
       qi.size = size;
       enqueue(&q, &qi);
-    } else { 
+    } else {
       quit = 1;
-    }    
+    }
     sem_post(tr2te);
   }
   return NULL;

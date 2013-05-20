@@ -1,4 +1,4 @@
-CFLAGS	:= -lpthread -Wall --pedantic
+CFLAGS	:= -g -lpthread -Wall --pedantic
 
 all: code queue log
 

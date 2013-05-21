@@ -1,6 +1,8 @@
 #ifndef LOG_H
 #define LOG_H
 
-void Log(char * message, char * file);
+void log_init();
+void log_post(char * message, char * ident);
+void log_close();
 
 #endif

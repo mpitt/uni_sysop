@@ -2,12 +2,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <pthread.h>
-#include "code.h"
-#include "queue.h"
-#include "log.h"
 #include <unistd.h>
 #include <semaphore.h>
 #include <string.h>
+#include "log.h"
+#include "queue.h"
+#include "code.h"
 
 char *r, *se, *sd;
 sem_t * tr2te;
@@ -100,21 +100,30 @@ void *trFunction (void * ptr) {
   char * end = "quit";
   queue_item qi;
 
+  log_post("Thread init", "raxor_tr");
+
   while(!quit) {
     s = (char *) malloc (N_BYTES + 1);
     queue_item qi;
 
     size = getline(&s, &N_BYTES, stdin);
+    log_post("Reading a new string", "raxor_tr");
     s[strlen(s)-1] = '\0';                /* remove last char of this string */
+
     if (strcmp(s, end) != 0) {
+      log_post("Create new queue item", "raxor_tr");
       qi.s = s;
       qi.size = size;
+      log_post("Enqueue queue item", "raxor_tr");
       enqueue(&q, &qi);
     } else {
       quit = 1;
     }
+
     sem_post(tr2te);
   }
+
+  log_post("Thread close", "raxor_tr");
   return 0;
 }
 
@@ -131,6 +140,8 @@ int main(int argc, char** argv) {
         return 0;
     }
   }
+
+  log_init();
 
   /* remove useless semaphore */
   sem_unlink("/tr2teSem");
@@ -160,6 +171,8 @@ int main(int argc, char** argv) {
   sem_close(te2td);
   sem_close(td2tw);
   sem_close(tw2te);
+
+  log_close();
 
   return 0;
 }

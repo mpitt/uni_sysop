@@ -20,9 +20,9 @@ int quit = 0;
 
 char * getXOR(char * s1, char *s2, int size) {
   int i;
-  char * tmp = malloc(size * sizeof(char));
+  char * tmp = malloc((size + 1) * sizeof(char));
 
-  for (i = 0; i < globalQi.size -1; i++)
+  for (i = 0; i < globalQi.size - 1; i++)
     *(tmp+i) = s1[i] ^ s2[i];
 
   return tmp;
@@ -31,11 +31,12 @@ char * getXOR(char * s1, char *s2, int size) {
 void *twFunction(void * ptr) {
   while(1) {
     sem_wait(td2tw);
-    printf("SD: %s\n", sd);
     if (is_empty(&q) && quit) {
+      printf("SD: %s\n", sd);
       sem_post(tw2te);
       return NULL;
     }
+    printf("SD: %s\n", sd);
     free(sd);
     sem_post(tw2te);
   }
@@ -45,8 +46,7 @@ void *twFunction(void * ptr) {
 void *tdFunction (void * ptr) {
   while(1) {
     sem_wait(te2td);
-    sd = getXOR(r, se, globalQi.size);
-    sd[globalQi.size-1] = '\0';
+    sd = getXOR(r, se, globalQi.size + 1);
     if (is_empty(&q) && quit) {
       sem_post(td2tw);
       return NULL;
@@ -75,11 +75,8 @@ void *teFunction (void * ptr) {
     sleep(2);
     globalQi = dequeue(&q);
 
-    r = malloc(globalQi.size * sizeof(char));
-    r[globalQi.size-1] = '\0';
-
+    r = malloc((globalQi.size + 1) * sizeof(char));
     rfd = open("/dev/random", O_RDONLY);
-
 
     for (i = 0; i < globalQi.size - 1; i++) {
       read(rfd, &c, sizeof(char));
@@ -88,10 +85,9 @@ void *teFunction (void * ptr) {
 
     close(rfd);
 
-    se = getXOR(globalQi.s, r, globalQi.size);
-    se[globalQi.size-1] = '\0';
+    se = getXOR(globalQi.s, r, globalQi.size + 1);
 
-    printf("\n\nR: %s\n", r);
+    printf("\nR: %s\n", r);
     printf("SE: %s\n", se);
     sem_post(te2td);
   }

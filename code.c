@@ -18,11 +18,11 @@ queue q;
 queue_item globalQi;
 int quit = 0;
 
-char * getXOR(char * s1, char *s2, int size) {
+char *getXOR(char *s1, char *s2, int size) {
   int i;
-  char * tmp = malloc((size + 1) * sizeof(char));
+  char * tmp = malloc(size * sizeof(char));
 
-  for (i = 0; i < globalQi.size - 1; i++)
+  for (i = 0; i < size; i++)
     *(tmp+i) = s1[i] ^ s2[i];
 
   return tmp;
@@ -31,67 +31,64 @@ char * getXOR(char * s1, char *s2, int size) {
 void *twFunction(void * ptr) {
   while(1) {
     sem_wait(td2tw);
-    if (is_empty(&q) && quit) {
-      printf("SD: %s\n", sd);
+    if (quit) {
       sem_post(tw2te);
       return NULL;
     }
-    printf("SD: %s\n", sd);
+    printf("SD: %.*s\n", globalQi.size, sd);
     free(sd);
     sem_post(tw2te);
   }
-  return NULL;
 }
 
 void *tdFunction (void * ptr) {
   while(1) {
     sem_wait(te2td);
-    sd = getXOR(r, se, globalQi.size + 1);
-    if (is_empty(&q) && quit) {
+    sd = getXOR(r, se, globalQi.size);
+    if (quit) {
       sem_post(td2tw);
       return NULL;
     }
     free(se);
+    free(r);
     sem_post(td2tw);
   }
-  return NULL;
 }
 
 void *teFunction (void * ptr) {
   int i, rfd;
   char c;
+  char * end = "quit";
 
   while(1) {
     sem_wait(tw2te);
-
     sem_wait(tr2te);
-    if(is_empty(&q)) {
-      if (quit) {
-        sem_post(te2td);
-        return 0;
-      }
-    }
 
     sleep(2);
     globalQi = dequeue(&q);
 
-    r = malloc((globalQi.size + 1) * sizeof(char));
+    if (strncmp(globalQi.s, end, strlen(end)) == 0) {
+      quit = 1;
+      sem_post(te2td);
+      return NULL;
+    }
+
+    r = malloc((globalQi.size) * sizeof(char));
     rfd = open("/dev/random", O_RDONLY);
 
-    for (i = 0; i < globalQi.size - 1; i++) {
+    for (i = 0; i < globalQi.size; i++) {
       read(rfd, &c, sizeof(char));
       *(r+i) = abs(c) % 26 + 65;
     }
 
     close(rfd);
 
-    se = getXOR(globalQi.s, r, globalQi.size + 1);
+    se = getXOR(globalQi.s, r, globalQi.size);
 
-    printf("\nR: %s\n", r);
-    printf("SE: %s\n", se);
+    printf("\nR: %.*s\n", globalQi.size, r);
+    printf("SE: %.*s\n", (int) strlen(se), se);
     sem_post(te2td);
   }
-  return NULL;
 }
 
 void *trFunction (void * ptr) {
@@ -100,22 +97,20 @@ void *trFunction (void * ptr) {
   char * end = "quit";
   queue_item qi;
 
-  while(!quit) {
+  while(1) {
     s = (char *) malloc (N_BYTES + 1);
-    queue_item qi;
 
-    size = getline(&s, &N_BYTES, stdin);
-    s[strlen(s)-1] = '\0';                /* remove last char of this string */
-    if (strcmp(s, end) != 0) {
-      qi.s = s;
-      qi.size = size;
-      enqueue(&q, &qi);
-    } else {
-      quit = 1;
-    }
+    size = getline(&s, &N_BYTES, stdin) - 1;
+    
+    qi.s = s;
+    qi.size = size;
+    enqueue(&q, &qi);
+
     sem_post(tr2te);
+
+    if (strncmp(s, end, strlen(end)) == 0)
+      return NULL;
   }
-  return 0;
 }
 
 int main(int argc, char** argv) {

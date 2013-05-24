@@ -29,12 +29,16 @@ char *getXOR(char *s1, char *s2, int size) {
 }
 
 void *twFunction(void * ptr) {
+  log_post("Thread TW init", "raxor_tw");
   while(1) {
     sem_wait(td2tw);
     if (quit) {
+      log_post("Thread TW close", "raxor_tw");
       sem_post(tw2te);
       return NULL;
     }
+
+    log_post("Print SD", "raxor_tw");
     printf("SD: %.*s\n", globalQi.size, sd);
     free(sd);
     sem_post(tw2te);
@@ -42,10 +46,18 @@ void *twFunction(void * ptr) {
 }
 
 void *tdFunction (void * ptr) {
+  log_post("Thread TD init", "raxor_td");
   while(1) {
     sem_wait(te2td);
+
+    log_post("Generate SD string", "raxor_td");
     sd = getXOR(r, se, globalQi.size);
+    char log[] = "SD generated: ";
+    strcat(log, sd);
+    log_post(log, "raxor_te");
+
     if (quit) {
+      log_post("Thread TD close", "raxor_td");
       sem_post(td2tw);
       return NULL;
     }
@@ -60,14 +72,18 @@ void *teFunction (void * ptr) {
   char c;
   char * end = "quit";
 
+  log_post("Thread TE init", "raxor_te");
+  
   while(1) {
     sem_wait(tw2te);
     sem_wait(tr2te);
 
     sleep(2);
     globalQi = dequeue(&q);
-
+    log_post("Dequeue queue item", "raxor_te");
+    
     if (strncmp(globalQi.s, end, strlen(end)) == 0) {
+      log_post("Thread TE close", "raxor_te");
       quit = 1;
       sem_post(te2td);
       return NULL;
@@ -76,15 +92,26 @@ void *teFunction (void * ptr) {
     r = malloc((globalQi.size) * sizeof(char));
     rfd = open("/dev/random", O_RDONLY);
 
+    log_post("Generate random R string", "raxor_te");
     for (i = 0; i < globalQi.size; i++) {
       read(rfd, &c, sizeof(char));
       *(r+i) = abs(c) % 26 + 65;
     }
 
+    char logR[] = "R generated: ";
+    strcat(logR, r);
+    log_post(logR, "raxor_te");
+
     close(rfd);
 
+    log_post("Generate SE string", "raxor_te");
     se = getXOR(globalQi.s, r, globalQi.size);
-
+    
+    char logSe[] = "SE generated: ";
+    strcat(logSe, se);
+    log_post(logSe, "raxor_te");
+    
+    log_post("Print R and SE", "raxor_te");
     printf("\nR: %.*s\n", globalQi.size, r);
     printf("SE: %.*s\n", (int) strlen(se), se);
     sem_post(te2td);
@@ -97,23 +124,29 @@ void *trFunction (void * ptr) {
   char * end = "quit";
   queue_item qi;
 
-  log_post("Thread init", "raxor_tr");
+  log_post("Thread TR init", "raxor_tr");
+
   while(1) {
     s = (char *) malloc (N_BYTES + 1);
 
     size = getline(&s, &N_BYTES, stdin) - 1;
     log_post("Reading a new string", "raxor_tr");
-    
-    log_post("Create new queue item", "raxor_tr");
+   
+
+    char log[] = "Create a new queue item: ";
+    strcat(log, s); 
+
+    log_post(log, "raxor_tr");
     qi.s = s;
     qi.size = size;
+  
     log_post("Enqueue queue item", "raxor_tr");
     enqueue(&q, &qi);
 
     sem_post(tr2te);
 
     if (strncmp(s, end, strlen(end)) == 0) {
-      log_post("Thread close", "raxor_tr");
+      log_post("Thread TR close", "raxor_tr");
       return NULL;
     }
   }

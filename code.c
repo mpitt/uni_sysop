@@ -51,16 +51,16 @@ void *tdFunction (void * ptr) {
     sem_wait(te2td);
 
     log_post("Generate SD string", "raxor_td");
-    sd = getXOR(r, se, globalQi.size);
-    char log[] = "SD generated: ";
-    strcat(log, sd);
-    log_post(log, "raxor_te");
-
     if (quit) {
       log_post("Thread TD close", "raxor_td");
       sem_post(td2tw);
       return NULL;
     }
+    sd = getXOR(r, se, globalQi.size);
+    char log[] = "SD generated: ";
+    strcat(log, sd);
+    log_post(log, "raxor_te");
+
     free(se);
     free(r);
     sem_post(td2tw);

@@ -71,7 +71,10 @@ void *tdFunction (void * ptr) {
 void *teFunction (void * ptr) {
   int i, rfd;
   char c;
-  char * end = "quit";
+  char *log;
+  char *end = "quit";
+  char *firstMessage = "R generated: ";
+  char *secondMessage = "SE generated: ";
 
   log_post("Thread TE init", "raxor_te");
   
@@ -99,22 +102,26 @@ void *teFunction (void * ptr) {
       *(r+i) = abs(c) % 26 + 65;
     }
 
-    char logR[] = "R generated: ";
-    strcat(logR, r);
-    log_post(logR, "raxor_te");
+    log = (char *) malloc((strlen(firstMessage) + globalQi.size + 1) * sizeof(char));
+    strcpy(log, firstMessage);
+    strcat(log, r);
+    log_post(log, "raxor_te");
+    free(log); 
 
     close(rfd);
 
     log_post("Generate SE string", "raxor_te");
     se = getXOR(globalQi.s, r, globalQi.size);
-    
-    char logSe[] = "SE generated: ";
-    strcat(logSe, se);
-    log_post(logSe, "raxor_te");
+
+    log = (char *) malloc(strlen(secondMessage) + globalQi.size + 1);
+    strcpy(log, secondMessage);
+    strcat(log, r);
+    log_post(log, "raxor_te");
+    free(log); 
     
     log_post("Print R and SE", "raxor_te");
     printf("\nR: %.*s\n", globalQi.size, r);
-    printf("SE: %.*s\n", (int) strlen(se), se);
+    printf("SE: %.*s\n", globalQi.size, se);
     sem_post(te2td);
   }
 }

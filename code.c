@@ -8,6 +8,7 @@
 #include "log.h"
 #include "queue.h"
 #include "code.h"
+#include <getopt.h>
 
 char *r, *se, *sd;
 sem_t * tr2te;
@@ -16,7 +17,7 @@ sem_t * td2tw;
 sem_t * tw2te;
 queue q;
 queue_item globalQi;
-int quit = 0;
+int quit = 0, sleep_time = 0;
 
 char *getXOR(char *s1, char *s2, int size) {
   int i;
@@ -78,7 +79,7 @@ void *teFunction (void * ptr) {
     sem_wait(tw2te);
     sem_wait(tr2te);
 
-    sleep(2);
+    sleep(sleep_time);
     globalQi = dequeue(&q);
     log_post("Dequeue queue item", "raxor_te");
     
@@ -151,11 +152,15 @@ void *trFunction (void * ptr) {
     }
   }
 }
+void print_usage() {
+    printf("Usage: encodes and decodes strings -s seconds\n");
+    printf("\tExit with 'quit'\n");
+}
 
 int main(int argc, char** argv) {
-  int c;
+  int opt, long_index=0;
   pthread_t tr, te, td, tw;
-
+/*
   while ( (c = getopt(argc, argv, "h")) != -1 ) {
     switch(c) {
       case 'h':
@@ -164,7 +169,28 @@ int main(int argc, char** argv) {
         printf("\tQuit with 'quit'\n");
         return 0;
     }
+  }*/
+
+   static struct option long_options[] = {
+        {"help",      no_argument,       0,  'h' },
+        {"second",    required_argument, 0,  's' },
+        {0,           0,                 0,  0   }
+    };
+
+    while ((opt = getopt_long_only(argc, argv,"", long_options, &long_index )) != -1) {
+        switch (opt) {
+           case 'h' :
+             print_usage();
+             return 0;
+           case 's' :
+             if (optarg != NULL)
+               sleep_time = atoi(optarg);
+             break;
+           default: print_usage();
+             break;
+     }
   }
+
 
   log_init();
 

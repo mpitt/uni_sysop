@@ -1,4 +1,4 @@
-CFLAGS	:= -lpthread -Wall --pedantic
+CFLAGS	:= -lpthread -Wall --pedantic -ggdb
 
 .PHONY: clean
 

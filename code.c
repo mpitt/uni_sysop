@@ -63,7 +63,7 @@ void *tdFunction (void * ptr) {
     log = (char *) malloc((strlen(message) + globalQi.size + 1) * sizeof(char));
     strcpy(log, message);
     strncat(log, sd, globalQi.size);
-    log_post(log, "raxor_te");
+    log_post(log, "raxor_td");
     free(log);
 
     free(se);

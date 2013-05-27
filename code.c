@@ -47,6 +47,8 @@ void *twFunction(void * ptr) {
 }
 
 void *tdFunction (void * ptr) {
+  char *log;
+  char *message = "SD generated: ";
   log_post("Thread TD init", "raxor_td");
   while(1) {
     sem_wait(te2td);
@@ -58,9 +60,11 @@ void *tdFunction (void * ptr) {
       return NULL;
     }
     sd = getXOR(r, se, globalQi.size);
-    char log[] = "SD generated: ";
-    strcat(log, sd);
+    log = (char *) malloc((strlen(message) + globalQi.size + 1) * sizeof(char));
+    strcpy(log, message);
+    strncat(log, sd, globalQi.size);
     log_post(log, "raxor_te");
+    free(log);
 
     free(se);
     free(r);
@@ -104,7 +108,7 @@ void *teFunction (void * ptr) {
 
     log = (char *) malloc((strlen(firstMessage) + globalQi.size + 1) * sizeof(char));
     strcpy(log, firstMessage);
-    strcat(log, r);
+    strncat(log, r, globalQi.size);
     log_post(log, "raxor_te");
     free(log); 
 
@@ -115,7 +119,7 @@ void *teFunction (void * ptr) {
 
     log = (char *) malloc(strlen(secondMessage) + globalQi.size + 1);
     strcpy(log, secondMessage);
-    strcat(log, r);
+    strncat(log, se, globalQi.size);
     log_post(log, "raxor_te");
     free(log); 
     
@@ -129,6 +133,8 @@ void *teFunction (void * ptr) {
 void *trFunction (void * ptr) {
   int size;
   char * s = (char *) malloc (N_BYTES + 1);
+  char * message = "Create a new queue item: ";
+  char * log;
   char * end = "quit";
   queue_item qi;
 
@@ -141,10 +147,12 @@ void *trFunction (void * ptr) {
     log_post("Reading a new string", "raxor_tr");
    
 
-    char log[] = "Create a new queue item: ";
-    strcat(log, s); 
-
+    log = (char *) malloc((strlen(message) + size + 1) * sizeof(char));
+    strcpy(log, message);
+    strncat(log, s, size); 
     log_post(log, "raxor_tr");
+    free(log);
+
     qi.s = s;
     qi.size = size;
   

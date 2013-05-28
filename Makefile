@@ -22,6 +22,10 @@ clean:
 install:
 	mkdir -p /var/log/threads/
 	chmod 777 -R /var/log/threads/
+	cp rsyslog.conf /etc/rsyslog.d/raxor.conf
+	service rsyslog restart
 
 uninstall:
 	rm -rf /var/log/threads/
+	rm -f /etc/rsyslog.d/raxor.conf
+	service rsyslog restart

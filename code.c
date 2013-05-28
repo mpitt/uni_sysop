@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include <string.h>
+#include <errno.h>
 #include "log.h"
 #include "queue.h"
 #include "code.h"
@@ -167,43 +168,58 @@ void *trFunction (void * ptr) {
     }
   }
 }
+
 void print_usage() {
-    printf("Usage: encodes and decodes strings -s seconds\n");
-    printf("\tExit with 'quit'\n");
+  printf("Usage: raxor [OPTION] ...\n");
+  printf("Encode and decode strings from standard input.\n");
+  printf("Exit with 'quit'\n\n");
+  printf("Options:\n-s, --sleep <time>\n");
+  printf("\tSleep for <time> seconds before elaborating an item\n");
+  printf("-v, -c, --version, --credits\n");
+  printf("\tDisplay version informations, credits and quit\n");
+  printf("-h, --help\n");
+  printf("\tDisplay this message and quit\n");
+}
+
+void print_credits() {
+  printf("raXor version 1.0\n");
+  printf("by Mattia Larentis, Andrea Panizza, Michele Pittoni\n");
 }
 
 int main(int argc, char** argv) {
   int opt, long_index=0;
   pthread_t tr, te, td, tw;
-/*
-  while ( (c = getopt(argc, argv, "h")) != -1 ) {
-    switch(c) {
-      case 'h':
-        printf("code: encodes and decodes strings\n");
-        printf("\tUsage: code\n");
-        printf("\tQuit with 'quit'\n");
+  char * eoa;
+
+  static struct option long_options[] = {
+    {"help",      no_argument,       0,  'h' },
+    {"sleep",     required_argument, 0,  's' },
+    {"version",   no_argument,       0,  'v' },
+    {"credits",   no_argument,       0,  'c' },
+    {0,           0,                 0,  0   }
+  };
+
+  while ((opt = getopt_long_only(argc, argv,"", long_options, &long_index )) != -1) {
+    switch (opt) {
+      case 'h' :
+        print_usage();
         return 0;
+      case 's' :
+        if (optarg != NULL) {
+          sleep_time = strtol(optarg, &eoa, 10);
+          if (eoa == optarg || errno == ERANGE) {
+            printf("Warning: supplied argument must start with an integer\n");
+            printf("No valid sleep interval supplied, using %d\n", sleep_time);
+          }
+        }
+        break;
+      case 'v':
+      case 'c':
+        print_credits();
+        return 0;
+      default:
+        break;
     }
-  }*/
-
-   static struct option long_options[] = {
-        {"help",      no_argument,       0,  'h' },
-        {"second",    required_argument, 0,  's' },
-        {0,           0,                 0,  0   }
-    };
-
-    while ((opt = getopt_long_only(argc, argv,"", long_options, &long_index )) != -1) {
-        switch (opt) {
-           case 'h' :
-             print_usage();
-             return 0;
-           case 's' :
-             if (optarg != NULL)
-               sleep_time = atoi(optarg);
-             break;
-           default: print_usage();
-             break;
-     }
   }
 
 

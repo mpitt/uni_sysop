@@ -1,3 +1,6 @@
+#ifndef THREADS_H
+#define THREADS_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -5,6 +8,7 @@
 #include <fcntl.h>
 
 #include "queue.h"
+#include "log.h"
 
 char *r, *se, *sd;
 queue q;
@@ -21,9 +25,11 @@ int quit, sleep_time;
 
 char *getXOR(char *s1, char *s2, int size);
 
-size_t N_BYTES = 1000;
+size_t N_BYTES;
 
 void semInit();
 void semClose();
 void threadInit();
 void threadClose();
+
+#endif

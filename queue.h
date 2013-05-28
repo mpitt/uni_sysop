@@ -1,3 +1,6 @@
+#ifndef QUEUE_H
+#define QUEUE_H
+
 #define QUEUESIZE       1000
 
 typedef struct {
@@ -18,3 +21,5 @@ void enqueue(queue *q, queue_item *qi);
 void init_queue(queue *q);
 void print_queue(queue *q);
 queue_item dequeue(queue *q);
+
+#endif

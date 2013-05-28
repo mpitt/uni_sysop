@@ -17,6 +17,8 @@ char *getXOR(char *s1, char *s2, int size) {
 }
 
 void semInit() {
+  N_BYTES = 1000;
+
   /* remove useless semaphore */
   sem_unlink("/tr2teSem");
   sem_unlink("/te2tdSem");

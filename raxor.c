@@ -28,9 +28,6 @@ int main(int argc, char** argv) {
   int opt, long_index=0;
   char * eoa;
 
-  quit = 0;
-  sleep_time = 0;
-
   static struct option long_options[] = {
     {"help",      no_argument,       0,  'h' },
     {"sleep",     required_argument, 0,  's' },
@@ -38,6 +35,9 @@ int main(int argc, char** argv) {
     {"credits",   no_argument,       0,  'c' },
     {0,           0,                 0,  0   }
   };
+
+  quit = 0;
+  sleep_time = 0;
 
   while ((opt = getopt_long_only(argc, argv,"", long_options, &long_index )) != -1) {
     switch (opt) {

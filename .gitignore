@@ -1,0 +1,6 @@
+*.out*
+*.gch
+*.o
+log
+code
+raxor

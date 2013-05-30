@@ -1,9 +1,13 @@
 #include "tr.h"
 
 void *trFunction (void * ptr) {
-/* trFunction read a string from stdin, put it into a queue and unlock a 'tr2te' semaphore.
-   If the string from stdin is 'quit', write a log message and return NULL
-*/
+
+  /* trFunction
+   *
+   * Read a string from stdin, put it into a queue and unlock a 'tr2te' semaphore.
+   * If the string from stdin is 'quit', write a log message and return NULL.
+   */
+
   int size;
   char * s = (char *) malloc (N_BYTES + 1);
   char * message = "Create a new queue item: ";

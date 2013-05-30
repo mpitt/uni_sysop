@@ -1,5 +1,5 @@
 #include <unistd.h>
-#include <errno.h>  /* string to int */
+#include <errno.h>  /* Standard error numbers */
 #include <getopt.h>
 
 #include "log.h"
@@ -8,7 +8,7 @@
 #include "threads.h"
 
 void print_usage() {
-/* print help and usage. This function tell the user how this program works.
+/* Print help and usage. This function tells the user how this program works.
 */
   printf("Usage: raxor [OPTION] ...\n");
   printf("Encode and decode strings from standard input.\n");
@@ -22,7 +22,7 @@ void print_usage() {
 }
 
 void print_credits() {
-/* print credits. This function tell the user who made this program.
+/* Print credits. This function tells the user who made this program.
 */
   printf("raXor version 1.0\n");
   printf("by Mattia Larentis, Andrea Panizza, Michele Pittoni\n");
@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
   int opt, long_index=0;
   char * eoa;
   
-/* long_options sets all the parameters that the program allow in input*/
+/* long_options sets all the parameters that the program allows in input */
   static struct option long_options[] = {
     {"help",      no_argument,       0,  'h' },
     {"sleep",     required_argument, 0,  's' },
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
   quit = 0;
   sleep_time = 0;
   
-/* Parsing all the options */
+/* Parse all the options */
   while ((opt = getopt_long_only(argc, argv,"", long_options, &long_index )) != -1) {
     switch (opt) {
       case 'h' :

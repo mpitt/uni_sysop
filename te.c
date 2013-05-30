@@ -1,12 +1,16 @@
 #include "te.h"
 
 void *teFunction (void * ptr) {
-/* teFunction wait until semaphore 'tw2te' and 'tr2te' is unlocked,
-   then dequeue an item, read a string from /dev/random (r), write a log message,
-   create SE, print r and SE and unlock 'te2td'
-   If dequeued item is 'quit' set quit to 1, unlock 'te2td', write a log message and return NULL
-   
-*/
+
+/* teFunction
+ *
+ * Wait until semaphore 'tw2te' and 'tr2te' is unlocked,
+ * then dequeue an item, read a string from /dev/random (r),
+ * write a log message, create SE, print r and SE and unlock 'te2td'.
+ * If dequeued item is 'quit' set quit to 1, unlock 'te2td',
+ * write a log message and return NULL.
+ */
+
   int i, rfd;
   char c;
   char *log;

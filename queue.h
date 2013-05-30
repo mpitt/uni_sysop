@@ -9,7 +9,7 @@ typedef struct {
 } queue_item;
 
 typedef struct {
-  queue_item qi[QUEUESIZE];       /* body of queue */
+  queue_item qi[QUEUESIZE];       /* content of the queue */
   int first;                      /* position of first element */
   int last;                       /* position of last element */
   int count;                      /* number of queue elements */

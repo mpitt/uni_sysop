@@ -9,7 +9,7 @@
 sem_t * thlog;
 
 void log_init() {
-/* Unlinking and creating the log's semaphore */
+/* Unlink and create the log's semaphore */
   sem_unlink("/thlogSem");
   thlog = sem_open("/thlogSem", O_CREAT|O_EXCL, 0666, 0);
   sem_post(thlog);
@@ -28,6 +28,6 @@ void log_post(char * message, char * ident) {
 }
 
 void log_close() {
-/* Closing the log semaphore */
+/* Close the log semaphore */
   sem_close(thlog);
 }

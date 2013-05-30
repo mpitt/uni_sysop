@@ -11,7 +11,7 @@ void init_queue(queue *q)
 
 void enqueue(queue *q, queue_item *qi)
 {
-/* Add a queue's item to the queue */
+/* Add a queue item to the queue */
 
   q->last = (q->last+1) % QUEUESIZE;
   q->qi[ q->last ] = *qi;
@@ -20,7 +20,7 @@ void enqueue(queue *q, queue_item *qi)
 
 queue_item dequeue(queue *q)
 {
-/* Remove a queue's item from the queue */
+/* Remove a queue item from the queue */
 
   queue_item x;
 

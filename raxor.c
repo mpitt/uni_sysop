@@ -8,6 +8,8 @@
 #include "threads.h"
 
 void print_usage() {
+/* print help and usage. This function tell the user how this program works.
+*/
   printf("Usage: raxor [OPTION] ...\n");
   printf("Encode and decode strings from standard input.\n");
   printf("Exit with 'quit'\n\n");
@@ -20,6 +22,8 @@ void print_usage() {
 }
 
 void print_credits() {
+/* print credits. This function tell the user who made this program.
+*/
   printf("raXor version 1.0\n");
   printf("by Mattia Larentis, Andrea Panizza, Michele Pittoni\n");
 }
@@ -27,7 +31,8 @@ void print_credits() {
 int main(int argc, char** argv) {
   int opt, long_index=0;
   char * eoa;
-
+  
+/* long_options sets all the parameters that the program allow in input*/
   static struct option long_options[] = {
     {"help",      no_argument,       0,  'h' },
     {"sleep",     required_argument, 0,  's' },
@@ -35,10 +40,10 @@ int main(int argc, char** argv) {
     {"credits",   no_argument,       0,  'c' },
     {0,           0,                 0,  0   }
   };
-
   quit = 0;
   sleep_time = 0;
-
+  
+/* Parsing all the options */
   while ((opt = getopt_long_only(argc, argv,"", long_options, &long_index )) != -1) {
     switch (opt) {
       case 'h' :
@@ -61,7 +66,6 @@ int main(int argc, char** argv) {
         break;
     }
   }
-
 
   log_init();
   init_queue(&q);

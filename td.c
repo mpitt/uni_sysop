@@ -1,6 +1,9 @@
 #include "td.h"
 
 void *tdFunction (void * ptr) {
+/* tdFunction wait until semaphore 'te2td' is unlocked, then create SD, write a log message and unlock td2tw semaphore.
+   If 'quit' is 1, write a log message, unlock td2tw and return NULL
+*/
   char *log;
   char *message = "SD generated: ";
   log_post("Thread TD init", "raxor_td");

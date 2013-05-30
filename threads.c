@@ -6,7 +6,10 @@
 #include "td.h"
 #include "tw.h"
 
+
 char *getXOR(char *s1, char *s2, int size) {
+/* Return a string 'tmp' created by the XOR between 's1' and 's2'
+*/
   int i;
   char * tmp = malloc(size * sizeof(char));
 
@@ -17,9 +20,12 @@ char *getXOR(char *s1, char *s2, int size) {
 }
 
 void semInit() {
+/* Initialize all the semaphores:
+     - unlinking (remove) all the semaphores
+	 - creating (open) all the semaphore
+*/
   N_BYTES = 1000;
 
-  /* remove useless semaphore */
   sem_unlink("/tr2teSem");
   sem_unlink("/te2tdSem");
   sem_unlink("/td2twSem");
@@ -34,6 +40,8 @@ void semInit() {
 }
 
 void semClose() {
+/* Closing all the semaphores
+*/
   sem_close(tr2te);
   sem_close(te2td);
   sem_close(td2tw);
@@ -41,6 +49,9 @@ void semClose() {
 }
 
 void threadInit() {
+/* Creating all the four threads.
+   Thread's parameters are: name, options, function, arg
+*/
   pthread_create(&tr, NULL, &trFunction, NULL);
   pthread_create(&te, NULL, &teFunction, NULL);
   pthread_create(&td, NULL, &tdFunction, NULL);
@@ -48,6 +59,8 @@ void threadInit() {
 }
 
 void threadClose() {
+/* Closing (join) all the four threads
+*/
   pthread_join(tr, NULL);
   pthread_join(te, NULL);
   pthread_join(td, NULL);

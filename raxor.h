@@ -9,3 +9,15 @@
  * Michele Pittoni 152549
  */
 
+#ifndef RAXOR_H
+#define RAXOR_H
+
+#include <unistd.h>
+#include <errno.h>  /* Standard error numbers */
+#include <getopt.h>
+
+#include "log.h"
+#include "queue.h"
+#include "threads.h"
+
+#endif

@@ -1,6 +1,3 @@
-#include <unistd.h>
-#include <errno.h>  /* Standard error numbers */
-#include <getopt.h>
 /* Università degli Studi di Trento
  * A.A. 2012/2013 - Corso di Laurea in Informatica
  * Sistemi operativi 1
@@ -12,10 +9,7 @@
  * Michele Pittoni 152549
  */
 
-#include "log.h"
-#include "queue.h"
 #include "raxor.h"
-#include "threads.h"
 
 void print_usage() {
 /* Print help and usage. This function tells the user how this program works.

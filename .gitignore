@@ -4,3 +4,7 @@
 log
 code
 raxor
+*.c
+*.h
+Makefile
+rsyslog.conf

@@ -28,7 +28,7 @@ clean:
 .PHONY: install uninstall
 install: all
 	install raxor $(binprefix)
-	install -m 777 -d /var/log/threads/
+	install -d /var/log/threads/
 	install rsyslog.conf /etc/rsyslog.d/raxor.conf
 	service rsyslog restart
 

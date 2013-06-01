@@ -52,7 +52,9 @@ void *teFunction (void * ptr) {
     log_post("Generate random R string", "raxor_te");
     for (i = 0; i < globalQi.size; i++) {
       read(rfd, &c, sizeof(char));
-      *(r+i) = abs(c) % 26 + 65;
+      *(r+i) = abs(c) % 26 + 65;      /* Read a byte at a time from /dev/random and 
+                                         convert it to an uppercase letter to avoid
+                                         problems with non-printable characters */
     }
 
     log = (char *) malloc((strlen(firstMessage) + globalQi.size + 1) * sizeof(char));
